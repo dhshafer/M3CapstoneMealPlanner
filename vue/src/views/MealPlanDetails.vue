@@ -49,13 +49,16 @@ export default {
     return {
       mealList: [],
       plan: null,
-      ingredientsList: {},
+      ingredientsList: {
+
+      },
       test: []
     };
   },
   created() {
     console.log("HECK YEAH");
-    AuthService.searchPlan(this.$route.params.id).then((response) => {
+    AuthService.searchPlan(this.$route.params.id)
+    .then((response) => {
       this.plan = response.data;
 
 
@@ -63,7 +66,8 @@ export default {
         day.mealList.forEach(meal => {
           meal.mealsRecipesList.forEach(recipe => {
             
-            AuthService.searchRecipe(recipe.recipe_id).then((response) => {
+            AuthService.searchRecipe(recipe.recipe_id)
+            .then((response) => {
               if(response.data.name in this.ingredientsList) {
                 const currRecipe = this.ingredientsList[response.data.name];
                 currRecipe.count++;
@@ -81,22 +85,18 @@ export default {
         });
       });
 
-  
-
-
-
-
-      console.log("console log - This is the plan's data: " + response.data);
+      console.log("console log - This is the plan's data: ");
       console.log(response.data);
 
       let days = response.data.days;
 
       days.forEach((meal) => {
         console.log(meal);
-        console.log("console log - This is the meal id: " + meal.meal_id);
+        console.log("console log - This is the meal id: ");
 
         meal.mealList.forEach((element) => {
-          AuthService.searchMeal(element.id).then((response) => {
+          AuthService.searchMeal(element.id)
+          .then((response) => {
             this.mealList.push(response.data);
           });
         });
@@ -117,19 +117,7 @@ export default {
       })
     },
   },
-  computed: {
-        ingredientFinal() {
-            let ret = [];
-            console.log(this.ingredientsList);
-            console.log(Object.getOwnPropertyNames(this.ingredientsList));
-            for (const x in this.ingredientsList) {
-              console.log("hello");
-              ret.push(this.ingredientsList[x]);
-            }
-            console.log(this.ingredientsList);
-            return ret; 
-        }
-    }
+  
 };
 </script>
 
