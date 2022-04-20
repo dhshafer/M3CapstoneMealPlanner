@@ -26,12 +26,9 @@
         </div>
       </div>
 
-      <h5>Grocery List</h5>
-      
-      <h5>{{ingredientsList}}</h5>
-      <h5>{{test}}</h5>
+      <h3>Grocery List</h3>
 
-      <h4>{{ingredientFinal}}</h4>
+      <h6 v-for="ingredient in this.ingredientsFinal" :key="ingredient">{{ingredient.quantity}} {{ingredient.measurement}} {{ingredient.name}}</h6>
     </div>
   </div>
 </template>
@@ -49,10 +46,8 @@ export default {
     return {
       mealList: [],
       plan: null,
-      ingredientsList: {
-
-      },
-      test: []
+      ingredientsList: [],
+      ingredientsFinal: []
     };
   },
   created() {
@@ -61,25 +56,18 @@ export default {
     .then((response) => {
       this.plan = response.data;
 
-
       this.plan.days.forEach(day => {
         day.mealList.forEach(meal => {
-          meal.mealsRecipesList.forEach(recipe => {
-            
-            AuthService.searchRecipe(recipe.recipe_id)
-            .then((response) => {
-              if(response.data.name in this.ingredientsList) {
-                const currRecipe = this.ingredientsList[response.data.name];
-                currRecipe.count++;
-              } else {
-                const newRecipe = {
-                  count: 1,
-                  ingredients: response.data.ingredientList
+          meal.mealsRecipesList.forEach(recipe => {     
+            AuthService.searchRecipe(recipe.recipe_id).then((response) => {
+              response.data.ingredientList.forEach(ingredient => {
+                if(this.ingredientsList.includes(ingredient.name)) {
+                  //pass
+                } else {
+                  this.ingredientsFinal.push(ingredient);
+                  this.ingredientsList.push(ingredient.name);
                 }
-                this.ingredientsList[response.data.name] = newRecipe;
-              }
-
-              this.test.push(response.data.name);
+              });
             });
           });
         });
@@ -117,7 +105,6 @@ export default {
       })
     },
   },
-  
 };
 </script>
 
